@@ -12,8 +12,11 @@ else
     fi
 
     mkdir "$base"
+    chown media_rw:media_rw "$base"
     chmod 777 "$base"
+
     touch "$base/.nomedia"
+    chown media_rw:media_rw "$base/.nomedia"
 fi
 
 cp /tmp/multirom/* "$base/"
