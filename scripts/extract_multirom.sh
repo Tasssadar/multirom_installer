@@ -13,6 +13,7 @@ else
 
     mkdir "$base"
     chmod 777 "$base"
+    touch "$base/.nomedia"
 fi
 
 cp /tmp/multirom/* "$base/"
