@@ -17,6 +17,9 @@ else
 
     touch "$base/.nomedia"
     chown media_rw:media_rw "$base/.nomedia"
+
+    # remove internal ROM in order to regenerate boot.img
+    rm -r "$base/roms/Internal"
 fi
 
 cp /tmp/multirom/* "$base/"
