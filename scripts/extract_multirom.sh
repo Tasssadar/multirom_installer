@@ -12,8 +12,8 @@ else
     fi
 
     mkdir "$base"
-    chown media_rw:media_rw "$base"
-    chmod 777 "$base"
+    chown root:root "$base"
+    chmod 770 "$base"
 
     mkdir "$base/roms"
     chown media_rw:media_rw "$base/roms"
@@ -26,7 +26,17 @@ else
     rm -r "$base/roms/Internal"
 fi
 
-cp /tmp/multirom/* "$base/"
+rm "$base/boot.img-ubuntu"*
+cp -r /tmp/multirom/* "$base/"
 chmod 755 "$base/multirom"
 chmod 755 "$base/busybox"
 chmod 750 "$base/trampoline"
+chmod 755 "$base/kexec"
+chmod 755 "$base/ntfs-3g"
+chmod 755 "$base/ubuntu-init/init"
+chmod 644 "$base/ubuntu-init/local"
+
+# This makes does not allows access for media scanner on android, but
+# still is enough for ubuntu
+chmod 770 "$base"
+chown root:root "$base"

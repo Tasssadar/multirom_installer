@@ -1,4 +1,5 @@
-assert(getprop("ro.product.device") == "grouper" || getprop("ro.build.product") == "grouper");
+assert(getprop("ro.product.device") == "grouper" || getprop("ro.build.product") == "grouper" ||
+       getprop("ro.product.device") == "tilapia" || getprop("ro.build.product") == "tilapia");
 
 ui_print("MultiROM for Nexus 7");
 show_progress(1.00000, 10);
