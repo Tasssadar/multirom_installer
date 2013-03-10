@@ -1,7 +1,10 @@
 #!/sbin/sh
 BUSYBOX="/tmp/multirom/busybox"
+LZ4="/tmp/lz4"
 BOOT_DEV="/dev/block/platform/sdhci-tegra.3/by-name/LNX"
 
+CMPR_GZIP=0
+CMPR_LZ4=1
 
 dd if=$BOOT_DEV of=/tmp/boot.img
 /tmp/unpackbootimg -i /tmp/boot.img -o /tmp/
@@ -14,8 +17,23 @@ rm -r /tmp/boot
 mkdir /tmp/boot
 
 cd /tmp/boot
-$BUSYBOX gzip -d -c ../boot.img-ramdisk.gz | $BUSYBOX cpio -i
-if [ ! -f /tmp/boot/init ] ; then
+rd_cmpr=-1
+magic=$($BUSYBOX hexdump -n 4 -v -e '/1 "%02X"' "../boot.img-ramdisk.gz")
+case "$magic" in
+    1F8B*)           # GZIP
+        $BUSYBOX gzip -d -c "../boot.img-ramdisk.gz" | $BUSYBOX cpio -i
+        rd_cmpr=CMPR_GZIP;
+        ;;
+    02214C18)        # LZ4
+        $LZ4 -d "../boot.img-ramdisk.gz" stdout | $BUSYBOX cpio -i
+        rd_cmpr=CMPR_LZ4;
+        ;;
+    *)
+        echo "invalid ramdisk magic $magic"
+        ;;
+esac
+
+if [ rd_cmpr == -1 ] || [ ! -f /tmp/boot/init ] ; then
     echo "Failed to extract ramdisk!"
     return 1
 fi
@@ -34,7 +52,15 @@ fi
 
 # pack the image again
 cd /tmp/boot
-find . | $BUSYBOX cpio -o -H newc | $BUSYBOX gzip > ../boot.img-ramdisk.gz
+
+case $rd_cmpr in
+    CMPR_GZIP)
+        find . | $BUSYBOX cpio -o -H newc | $BUSYBOX gzip > "../boot.img-ramdisk.gz"
+        ;;
+    CMPR_LZ4)
+        find . | $BUSYBOX cpio -o -H newc | $LZ4 stdin "../boot.img-ramdisk.gz"
+        ;;
+esac
 
 cd /tmp
 /tmp/mkbootimg --kernel boot.img-zImage --ramdisk boot.img-ramdisk.gz --cmdline "$(cat boot.img-cmdline)" --base $(cat boot.img-base) --output /tmp/newboot.img
