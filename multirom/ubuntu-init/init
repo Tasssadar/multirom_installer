@@ -23,7 +23,7 @@ if ! mount -t devtmpfs -o mode=0755 udev /dev; then
 fi
 mkdir /dev/pts
 mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts || true
-mount -t tmpfs -o "nosuid,size=20%,mode=0755" tmpfs /run
+mount -t tmpfs -o "noexec,nosuid,size=10%,mode=0755" tmpfs /run
 mkdir /run/initramfs
 # compatibility symlink for the pre-oneiric locations
 ln -s /run/initramfs /dev/.initramfs
