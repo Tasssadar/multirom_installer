@@ -35,6 +35,8 @@ chmod 755 "$base/kexec"
 chmod 755 "$base/ntfs-3g"
 chmod 755 "$base/ubuntu-init/init"
 chmod 644 "$base/ubuntu-init/local"
+chmod 755 "$base/ubuntu-touch-init/init"
+chmod 644 "$base/ubuntu-touch-init/scripts/touch"
 
 # This makes does not allows access for media scanner on android, but
 # still is enough for ubuntu
